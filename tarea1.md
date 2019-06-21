@@ -178,3 +178,78 @@ COMMIT TRAN
 A continuación la evidencia de la ejecución del script anterior.
 <img src="https://i.imgur.com/J8Tj2RA.png">
 
+
+## FactEstacionamiento
+Creación de la tabla fact de estacionamiento.
+
+### Script de creación de tabla
+```sql
+select a.TarifaBase as 'Tarifa Base', a.Ganancia, a.Mantenimiento, a.ImpVentas as 'Impuesto
+de ventas', a.TotalACobrar as Total,b.descripcion as 'Ingreso', c.descripcion as 'Salida',
+d.descripcion as 'Estadía', SUBSTRING(f.descripcion,1,2) as 'RestriccionEntrada',
+SUBSTRING(g.descripcion,1,2) as 'RestriccionSalida',
+h.descripcion, isnull(i.NombreFeriado,'Día no feriado') as 'Día Entrada',
+isnull(j.NombreFeriado,'Día no feriado') as 'Día Salida'
+from Estacionamiento a
+join Estratos b on DATEPART(HH,a.FechaHoraIngreso) between b.Minimo and b.maximo and
+b.Tipo = 'Hora'
+join Estratos c on DATEPART(HH,a.FechaHoraIngreso) between c.Minimo and c.maximo and
+c.Tipo = 'Hora'
+join Estratos d on DATEDIFF(MI,a.FechaHoraIngreso,a.FechaHoraSalida) between d.Minimo
+and d.maximo and d.Tipo='Minutos'
+join Vehiculo e on a.IDVehiculo = e.IDVehiculo
+join Estratos f on (select RIGHT(e.Placa,1)) between f.Minimo and f.maximo and f.Tipo
+='Restriccion' and CHARINDEX(DATEName(DW,a.FechaHoraIngreso),f.descripcion) >0
+join Estratos g on (select RIGHT(e.Placa,1)) between g.Minimo and g.maximo and
+g.Tipo='Restriccion' and CHARINDEX(DATEName(DW,a.FechaHoraSalida),g.descripcion) >0
+join Estratos h on convert(int, a.Ganancia,0) between h.Minimo and h.maximo and
+h.Tipo='Ganancia'
+left join DiasFeriadosAnuales i on DATEPART(DD,a.FechaHoraIngreso) =i.DiaFeriado and
+DATEPART(MM,a.FechaHoraIngreso) = i.MesFeriado
+left join DiasFeriadosAnuales j on DATEPART(DD,a.FechaHoraIngreso) =j.DiaFeriado and
+DATEPART(MM,a.FechaHoraIngreso) = j.MesFeriado;
+```
+A continuación la evidencia de la creación de la tabla.
+<img src="https://i.imgur.com/HkKWkl1.png">
+
+### Select
+```sql
+select a.IDParqueo, b.Descripcion as distrito, c.Descripcion as canton, d.Descripcion as provincia
+from Parqueo a
+join Distrito b on a.ConsecutivoDistrito = b.ConsecutivoDistrito
+join Canton c on b.IDCanton = c.IDCanton
+join Provincia d on c.IDProvincia = d.IDProvincia
+where b.IDProvincia = c.IDProvincia;
+```
+
+### Script completo
+```sql
+
+
+IF OBJECT_ID('dbo.DimParqueo', 'U') IS NOT NULL 
+  DROP TABLE dbo.DimParqueo; 
+
+create table DimParqueo(
+IDParqueo numeric(10, 0) primary key,
+Distrito varchar(50) null,
+Canton varchar(50) null,
+Provincia varchar(50) null
+);
+
+BEGIN TRAN
+
+insert into DimParqueo
+select a.IDParqueo, b.Descripcion as distrito, c.Descripcion as canton, d.Descripcion as provincia
+from Parqueo a
+join Distrito b on a.ConsecutivoDistrito = b.ConsecutivoDistrito
+join Canton c on b.IDCanton = c.IDCanton
+join Provincia d on c.IDProvincia = d.IDProvincia
+where b.IDProvincia = c.IDProvincia;
+
+GO
+
+COMMIT TRAN
+```
+
+A continuación la evidencia de la ejecución del script anterior.
+<img src="https://i.imgur.com/ZBEKauf.png">
