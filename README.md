@@ -1,7 +1,9 @@
 # Analisis multidimensional de datos
 Proyectos, tareas y ejercicios en clase
 
-## Tarea 1: DimParqueo y FactEstacionamiento
+## Tarea 1
+Creación de DimParqueo y FactEstacionamiento
+
 Integrantes:
 * Andrey
 * Manfred Juárez
