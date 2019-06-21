@@ -11,7 +11,7 @@ create table DimParqueo(
 );
 ```
 A continuación la evidencia de la creación de la tabla.
-<img src="https://i.imgur.com/aIkoR52.png">
+<img src="https://i.imgur.com/nOZmQ3c.png">
 
 ### Select
 ```sql
