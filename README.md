@@ -7,4 +7,4 @@ Integrantes:
 * Manfred Juárez
 
 Archivos
-* [[tarea1|fuentes]]
+* [Fuentes y evidencias](tarea1.md)
